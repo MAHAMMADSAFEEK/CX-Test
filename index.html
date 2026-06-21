@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SunTrail — Solar Project Tracker (Demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10213B;
+    --sky:#3E8EF7;
+    --sun:#FFB627;
+    --cream:#F6F8FB;
+    --paper:#FFFFFF;
+    --green:#1E9E66;
+    --line:#E3E8F0;
+    --muted:#5C6B85;
+    --display:'Sora', sans-serif;
+    --body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:var(--body);
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  a{color:inherit;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 6%;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:var(--display); font-weight:800; font-size:22px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--sun), #E8950A);
+    display:inline-block;
+  }
+  .nav-links{display:flex; gap:32px; font-size:14.5px; font-weight:500; color:var(--muted);}
+  .nav-cta{
+    background:var(--ink); color:#fff; border:none; padding:11px 20px;
+    border-radius:8px; font-weight:600; font-size:14px; cursor:pointer;
+  }
+  @media (max-width:880px){ .nav-links{display:none;} }
+
+  /* ---------- HERO / SPLIT ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.1fr 0.9fr;
+    min-height:640px;
+  }
+  .hero-left{
+    padding:64px 6% 40px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .eyebrow{
+    font-size:13px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--sky); margin-bottom:14px;
+  }
+  h1{
+    font-family:var(--display); font-weight:800;
+    font-size:clamp(34px,4.4vw,52px);
+    line-height:1.08;
+    max-width:560px;
+  }
+  h1 .accent{
+    background:linear-gradient(90deg,var(--sky),var(--sun));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{
+    margin-top:18px; color:var(--muted); font-size:16.5px; max-width:480px;
+  }
+  .hero-stats{
+    display:flex; gap:36px; margin-top:42px;
+  }
+  .stat b{font-family:var(--display); font-size:26px; display:block;}
+  .stat span{font-size:13px; color:var(--muted);}
+
+  .hero-right{
+    background:linear-gradient(180deg,#0E1B33,#16294D);
+    padding:48px 5%;
+    display:flex; align-items:center;
+  }
+  .panel{
+    background:var(--paper); border-radius:18px; width:100%;
+    padding:30px 28px; box-shadow:0 30px 60px -20px rgba(0,0,0,.35);
+  }
+  .tabs{display:flex; background:var(--cream); border-radius:10px; padding:4px; margin-bottom:22px;}
+  .tab{
+    flex:1; text-align:center; padding:10px 8px; font-size:13.5px; font-weight:600;
+    border-radius:8px; cursor:pointer; color:var(--muted);
+  }
+  .tab.active{background:var(--ink); color:#fff;}
+
+  .panel h2{font-family:var(--display); font-size:21px; margin-bottom:6px;}
+  .panel p.hint{color:var(--muted); font-size:13.5px; margin-bottom:20px;}
+
+  label{display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin:14px 0 6px;}
+  input[type=text], input[type=tel]{
+    width:100%; padding:12px 13px; border:1.5px solid var(--line); border-radius:9px;
+    font-size:14.5px; font-family:var(--body); outline:none; transition:border-color .15s;
+  }
+  input:focus{border-color:var(--sky);}
+
+  .bill-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:6px;}
+  .bill-opt{
+    border:1.5px solid var(--line); border-radius:9px; padding:11px 8px; text-align:center;
+    font-size:13px; font-weight:600; cursor:pointer; color:var(--ink); user-select:none;
+  }
+  .bill-opt.selected{border-color:var(--sky); background:#EAF2FF; color:var(--sky);}
+
+  .agree{display:flex; align-items:flex-start; gap:8px; margin-top:16px; font-size:12.5px; color:var(--muted);}
+  .agree input{margin-top:3px;}
+
+  .submit-btn{
+    width:100%; margin-top:18px; padding:14px; border:none; border-radius:10px;
+    background:linear-gradient(90deg,var(--ink),#1C3766); color:#fff;
+    font-weight:700; font-size:15px; cursor:pointer; font-family:var(--display);
+  }
+  .submit-btn:hover{filter:brightness(1.08);}
+  .form-msg{margin-top:12px; font-size:13px; text-align:center; color:var(--green); font-weight:600; display:none;}
+
+  /* ---------- TRACKER SECTION ---------- */
+  .tracker-section{padding:70px 6% 90px;}
+  .tracker-head{text-align:center; max-width:620px; margin:0 auto 36px;}
+  .tracker-head h2{font-family:var(--display); font-size:clamp(26px,3vw,36px); font-weight:800;}
+  .tracker-head p{color:var(--muted); margin-top:10px; font-size:15.5px;}
+
+  .lookup-row{
+    display:flex; gap:10px; max-width:520px; margin:0 auto 8px; flex-wrap:wrap;
+  }
+  .lookup-row input{flex:1; min-width:220px;}
+  .lookup-row button{
+    background:var(--sky); color:#fff; border:none; padding:0 26px; border-radius:9px;
+    font-weight:700; font-size:14.5px; cursor:pointer;
+  }
+  .lookup-hint{text-align:center; font-size:12.5px; color:var(--muted); margin-bottom:30px;}
+  .lookup-hint code{background:#EDF1F7; padding:2px 6px; border-radius:5px;}
+  .lookup-error{
+    max-width:520px; margin:0 auto 20px; text-align:center; color:#C0392B;
+    font-size:13.5px; font-weight:600; display:none;
+  }
+
+  /* Result card */
+  #resultWrap{display:none; max-width:980px; margin:0 auto;}
+  .result-card{
+    background:var(--paper); border-radius:18px; padding:34px 36px;
+    border:1px solid var(--line);
+  }
+  .result-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:8px;}
+  .result-top h3{font-family:var(--display); font-size:21px;}
+  .result-top .meta{font-size:13px; color:var(--muted); margin-top:4px;}
+  .status-pill{
+    align-self:flex-start; background:#FFF4DF; color:#B9750A; font-weight:700; font-size:12.5px;
+    padding:7px 14px; border-radius:999px; white-space:nowrap;
+  }
+  .status-pill.done{background:#E5F7ED; color:var(--green);}
+
+  /* Sun-path journey */
+  .journey{position:relative; margin-top:42px; padding:30px 0 10px;}
+  .journey-track{
+    position:relative; height:4px; background:var(--line); border-radius:4px;
+    margin:0 18px;
+  }
+  .journey-fill{
+    position:absolute; top:0; left:0; height:4px; border-radius:4px;
+    background:linear-gradient(90deg,var(--sun),var(--sky));
+    transition:width .6s ease;
+  }
+  .journey-steps{
+    display:flex; justify-content:space-between; margin:0 -4px; position:relative; top:-22px;
+  }
+  .step{
+    flex:1; display:flex; flex-direction:column; align-items:center; text-align:center;
+    position:relative; padding:0 2px;
+  }
+  .step-dot{
+    width:22px; height:22px; border-radius:50%; background:var(--paper);
+    border:3px solid var(--line); margin-bottom:10px; z-index:2;
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--muted);
+  }
+  .step.complete .step-dot{
+    border-color:var(--green); background:var(--green); color:#fff;
+  }
+  .step.current .step-dot{
+    border-color:var(--sun); background:var(--sun); color:#fff;
+    box-shadow:0 0 0 5px rgba(255,182,39,.25);
+  }
+  .step-label{font-size:11.5px; font-weight:600; color:var(--muted); max-width:78px; line-height:1.25;}
+  .step.complete .step-label, .step.current .step-label{color:var(--ink);}
+
+  @media (max-width:760px){
+    .journey-steps{flex-wrap:nowrap; overflow-x:auto; gap:18px; top:0; margin-top:18px;}
+    .journey-track{display:none;}
+    .step{min-width:74px;}
+  }
+
+  .timeline-note{
+    margin-top:30px; background:var(--cream); border-radius:12px; padding:18px 20px;
+    font-size:13.5px; color:var(--ink);
+  }
+  .timeline-note b{color:var(--sky);}
+
+  /* Hero responsive */
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;}
+    .hero-right{padding:36px 6% 60px;}
+  }
+
+  footer{
+    text-align:center; padding:30px; font-size:12.5px; color:var(--muted);
+    border-top:1px solid var(--line); background:var(--paper);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span class="dot"></span>SunTrail</div>
+  <div class="nav-links">
+    <span>Our Offerings</span><span>Solar Solutions</span><span>Cities</span><span>Blog</span>
+  </div>
+  <button class="nav-cta">Get Free Quote</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="eyebrow">Demo build — sample data only</div>
+    <h1>Track your solar journey, <span class="accent">step by sunlit step.</span></h1>
+    <p class="hero-sub">Book a free consultation, or check exactly where your installation stands — from lead request to commissioning.</p>
+    <div class="hero-stats">
+      <div class="stat"><b>9</b><span>journey stages</span></div>
+      <div class="stat"><b>3</b><span>sample leads loaded</span></div>
+      <div class="stat"><b>0</b><span>Google Sheet connected</span></div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="panel">
+      <div class="tabs">
+        <div class="tab active">Residential</div>
+        <div class="tab">Housing Society</div>
+        <div class="tab">Commercial</div>
+      </div>
+      <h2>Book a FREE Consultation</h2>
+      <p class="hint">Get genuine advice from our solar experts. No pressure, book only if you're satisfied.</p>
+
+      <form id="leadForm">
+        <label>Full Name</label>
+        <input type="text" id="fName" placeholder="Enter your name" required>
+
+        <label>WhatsApp Number</label>
+        <input type="tel" id="fPhone" placeholder="10-digit number" required maxlength="10">
+
+        <label>PIN Code</label>
+        <input type="text" id="fPin" placeholder="6-digit PIN code" maxlength="6">
+
+        <label>Monthly Electricity Bill</label>
+        <div class="bill-grid" id="billGrid">
+          <div class="bill-opt" data-v="Less than ₹1500">Less than ₹1500</div>
+          <div class="bill-opt" data-v="₹1500–₹2500">₹1500 – ₹2500</div>
+          <div class="bill-opt" data-v="₹2500–₹4000">₹2500 – ₹4000</div>
+          <div class="bill-opt" data-v="₹4000–₹8000">₹4000 – ₹8000</div>
+          <div class="bill-opt" data-v="More than ₹8000">More than ₹8000</div>
+        </div>
+
+        <div class="agree">
+          <input type="checkbox" checked id="fAgree">
+          <span>I agree to SunTrail Terms of use and Privacy Policy.</span>
+        </div>
+
+        <button type="submit" class="submit-btn">Book a FREE Consultation</button>
+        <div class="form-msg" id="formMsg">✓ Thanks! This is a demo — no data was actually sent anywhere.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="tracker-section">
+  <div class="tracker-head">
+    <h2>Check your project status</h2>
+    <p>Enter the WhatsApp number used at booking to see live progress through your solar journey.</p>
+  </div>
+
+  <div class="lookup-row">
+    <input type="tel" id="lookupPhone" placeholder="Enter WhatsApp number" maxlength="10">
+    <button id="lookupBtn">Check Status</button>
+  </div>
+  <div class="lookup-hint">Try a demo number: <code>9876543210</code>, <code>9123456780</code>, or <code>9988776655</code></div>
+  <div class="lookup-error" id="lookupError">No project found for this number. Please check and try again.</div>
+
+  <div id="resultWrap">
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <h3 id="resName">—</h3>
+          <div class="meta" id="resMeta">—</div>
+        </div>
+        <div class="status-pill" id="resPill">—</div>
+      </div>
+
+      <div class="journey">
+        <div class="journey-track"><div class="journey-fill" id="journeyFill"></div></div>
+        <div class="journey-steps" id="journeySteps"></div>
+      </div>
+
+      <div class="timeline-note" id="timelineNote"></div>
+    </div>
+  </div>
+</section>
+
+<footer>SunTrail demo UI — sample data shown for layout/testing purposes only. Not connected to a live Google Sheet yet.</footer>
+
+<script>
+  // ---------- Journey stages ----------
+  const STAGES = [
+    "Lead Request","Pre-HOTO","PO / Advance","HOTO",
+    "Design","CX Approval","HOTO 2","Installation","Commissioning"
+  ];
+
+  // ---------- Demo dataset (stand-in for the Google Sheet) ----------
+  const DEMO_LEADS = {
+    "9876543210": {
+      name:"Rohit Sharma", city:"Pune", capacity:"5 kW",
+      currentStageIndex:7, installState:"In Process",
+      lastUpdate:"Installation team visited site on 18 Jun 2026; mounting structure complete, panel fixing in progress."
+    },
+    "9123456780": {
+      name:"Anjali Mehta", city:"Ahmedabad", capacity:"3 kW",
+      currentStageIndex:8, installState:"Completed",
+      lastUpdate:"Commissioning completed on 15 Jun 2026. Net-metering application submitted to DISCOM."
+    },
+    "9988776655": {
+      name:"Karan Patel", city:"Surat", capacity:"7 kW",
+      currentStageIndex:2, installState:"Pending",
+      lastUpdate:"Advance payment received on 10 Jun 2026. Awaiting site HOTO scheduling."
+    }
+  };
+
+  // ---------- Lead capture form (demo only) ----------
+  const billGrid = document.getElementById('billGrid');
+  let selectedBill = null;
+  billGrid.addEventListener('click', e=>{
+    const opt = e.target.closest('.bill-opt');
+    if(!opt) return;
+    [...billGrid.children].forEach(c=>c.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedBill = opt.dataset.v;
+  });
+
+  document.getElementById('leadForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const msg = document.getElementById('formMsg');
+    msg.style.display = 'block';
+    setTimeout(()=>{ e.target.reset(); [...billGrid.children].forEach(c=>c.classList.remove('selected')); msg.style.display='none'; }, 3500);
+  });
+
+  // ---------- Status tracker ----------
+  const lookupBtn = document.getElementById('lookupBtn');
+  const lookupPhone = document.getElementById('lookupPhone');
+  const lookupError = document.getElementById('lookupError');
+  const resultWrap = document.getElementById('resultWrap');
+
+  function renderResult(lead){
+    document.getElementById('resName').textContent = lead.name;
+    document.getElementById('resMeta').textContent = `${lead.city} · ${lead.capacity} system`;
+
+    const pill = document.getElementById('resPill');
+    const isDone = lead.currentStageIndex === STAGES.length-1;
+    pill.textContent = isDone ? "Commissioned" : `Currently: ${STAGES[lead.currentStageIndex]}`;
+    pill.classList.toggle('done', isDone);
+
+    const stepsWrap = document.getElementById('journeySteps');
+    stepsWrap.innerHTML = '';
+    STAGES.forEach((label, i)=>{
+      const div = document.createElement('div');
+      let cls = 'step';
+      if(i < lead.currentStageIndex) cls += ' complete';
+      else if(i === lead.currentStageIndex) cls += ' current';
+      div.className = cls;
+
+      let dotContent = (i+1);
+      if(i < lead.currentStageIndex) dotContent = '✓';
+
+      let extra = '';
+      if(label === 'Installation' && i === lead.currentStageIndex){
+        extra = `<div style="font-size:10px;color:#B9750A;font-weight:700;margin-top:2px;">${lead.installState}</div>`;
+      }
+      div.innerHTML = `<div class="step-dot">${dotContent}</div><div class="step-label">${label}</div>${extra}`;
+      stepsWrap.appendChild(div);
+    });
+
+    const pct = (lead.currentStageIndex / (STAGES.length-1)) * 100;
+    document.getElementById('journeyFill').style.width = pct + '%';
+
+    document.getElementById('timelineNote').innerHTML = `<b>Latest update:</b> ${lead.lastUpdate}`;
+
+    resultWrap.style.display = 'block';
+    lookupError.style.display = 'none';
+  }
+
+  function doLookup(){
+    const phone = lookupPhone.value.trim();
+    const lead = DEMO_LEADS[phone];
+    if(lead){
+      renderResult(lead);
+    }else{
+      resultWrap.style.display = 'none';
+      lookupError.style.display = 'block';
+    }
+  }
+
+  lookupBtn.addEventListener('click', doLookup);
+  lookupPhone.addEventListener('keydown', e=>{ if(e.key==='Enter') doLookup(); });
+</script>
+
+</body>
+</html>
