@@ -354,6 +354,62 @@
     display:flex;align-items:center;justify-content:center;cursor:pointer;
   }
   .logout-btn svg{width:16px;height:16px;color:var(--ink);}
+
+  /* ===================== PHONE VIEW ===================== */
+  @media (max-width:820px){
+    .app{flex-direction:column;}
+
+    /* Sidebar becomes a fixed bottom tab bar */
+    .sidebar{
+      position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;width:100%;
+      flex-direction:row;z-index:30;border-top:1px solid var(--ink-line);
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+    .brand,.plant-card{display:none;}
+    nav.navlist{
+      flex-direction:row;width:100%;padding:6px 4px;gap:0;
+    }
+    .navitem{
+      flex-direction:column;gap:3px;flex:1;min-width:0;padding:8px 2px;
+      font-size:10px;text-align:center;align-items:center;position:relative;
+    }
+    .navitem svg{width:19px;height:19px;}
+    .navitem .dot{position:absolute;top:5px;right:22%;margin-left:0;}
+
+    /* Leave room for bottom tab bar */
+    .main{padding-bottom:0;}
+    .content{padding:16px 14px 88px;}
+    .topbar{padding:16px 14px 0;flex-wrap:wrap;gap:10px;}
+    .greeting h1{font-size:18px;}
+    .greeting p{font-size:12.5px;}
+    .topbar-right{gap:10px;}
+
+    /* Stack all grids to a single column */
+    .grid-3,.grid-2{grid-template-columns:1fr;}
+    .doc-grid{grid-template-columns:1fr;}
+
+    .card{padding:16px;}
+    .arc-wrap{flex-direction:column;align-items:flex-start;gap:14px;}
+
+    /* Let wide tables scroll horizontally inside their card instead of squeezing */
+    .card{overflow-x:auto;}
+    .card table{min-width:520px;}
+
+    .journey-rail{padding:8px 2px 18px;}
+
+    /* Login card fits small screens */
+    .login-card{width:88vw;max-width:380px;padding:26px 22px;}
+
+    /* Chat becomes a near-full-width sheet sitting above the tab bar */
+    .chat-fab{bottom:78px;right:16px;}
+    .chat-panel{
+      left:12px;right:12px;bottom:70px;width:auto;height:64vh;
+    }
+  }
+  @media (max-width:380px){
+    .navitem{font-size:9px;}
+    .navitem svg{width:17px;height:17px;}
+  }
 </style>
 </head>
 <body>
